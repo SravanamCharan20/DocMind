@@ -31,7 +31,7 @@ def ensure_collection():
 
 def embed_and_store(chunks: list[str], source_doc: str):
     ensure_collection()
-    vectors = embedding_model.encode(chunks).tolist()
+    vectors = embedding_model.encode(chunks).tolist() # it will create an array which converted into list
 
     points = [
         PointStruct(

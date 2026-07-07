@@ -1,8 +1,10 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from app.ingestion import extract_text, chunk_text
 from app.retrieval import embed_and_store, hybrid_search, build_bm25_index
 from app.rerank import rerank_chunks
 from app.generate import generate_answer
+from langfuse import observe
+
 
 app = FastAPI(title="DocMind RAG Service")
 
@@ -24,19 +26,17 @@ async def upload_document(file: UploadFile = File(...)):
     return {"filename": file.filename, "num_characters": len(text), "num_chunks": len(chunks)}
 
 @app.get("/query")
+@observe()
 def query_documents(q: str):
     hybrid_results = hybrid_search(q)
     reranked_results = rerank_chunks(q, hybrid_results)
-    answer = generate_answer(q, reranked_results)
+    try:
+        answer = generate_answer(q, reranked_results)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return {
         "query": q,
         "answer": answer,
-        "before_rerank": [
-            {"source_doc": c["source_doc"], "chunk_index": c["chunk_index"], "matched_by": c["matched_by"]}
-            for c in hybrid_results
-        ],
-        "after_rerank": [
-            {"source_doc": c["source_doc"], "chunk_index": c["chunk_index"], "rerank_score": c["rerank_score"]}
-            for c in reranked_results
-        ],
+        "before_rerank": [...],  # keep whatever you already have here
+        "after_rerank": [...],
     }

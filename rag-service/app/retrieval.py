@@ -5,6 +5,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
 from rank_bm25 import BM25Okapi
 import re
+from langfuse import observe
 
 load_dotenv()  # reads .env into environment variables
 
@@ -112,6 +113,8 @@ def vector_search(query: str, top_k: int = 20):
     ]
 
 
+
+@observe()
 def hybrid_search(query: str, top_k_each: int = 20):
     """Runs vector + BM25 independently, merges by (source_doc, chunk_index), dedupes."""
     vector_results = vector_search(query, top_k=top_k_each)

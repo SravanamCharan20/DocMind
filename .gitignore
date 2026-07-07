@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-rag-service/eval/eval_results.csv
+rag-service/eval/eval_results.csv.claude/
+CLAUDE.md

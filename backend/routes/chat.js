@@ -15,7 +15,7 @@ router.post("/query", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Space not found" });
     }
 
-    const fastApiResponse = await axios.get("http://127.0.0.1:8000/query", {
+    const fastApiResponse = await axios.get(`${process.env.RAG_SERVICE_URL}/query`, {
       params: { q: question, space_id: spaceId },
     });
 

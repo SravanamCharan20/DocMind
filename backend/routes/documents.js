@@ -22,7 +22,7 @@ router.post("/upload", requireAuth, upload.single("file"), async (req, res) => {
     formData.append("space_id", spaceId);
 
     const fastApiResponse = await axios.post(
-      "http://127.0.0.1:8000/upload",
+      `${process.env.RAG_SERVICE_URL}/upload`,
       formData,
       { headers: formData.getHeaders() }
     );

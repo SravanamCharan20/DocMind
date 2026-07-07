@@ -34,9 +34,16 @@ def query_documents(q: str):
         answer = generate_answer(q, reranked_results)
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))
+
     return {
         "query": q,
         "answer": answer,
-        "before_rerank": [...],  # keep whatever you already have here
-        "after_rerank": [...],
+        "before_rerank": [
+            {"source_doc": c["source_doc"], "chunk_index": c["chunk_index"], "matched_by": c["matched_by"]}
+            for c in hybrid_results
+        ],
+        "after_rerank": [
+            {"source_doc": c["source_doc"], "chunk_index": c["chunk_index"], "rerank_score": c["rerank_score"]}
+            for c in reranked_results
+        ],
     }

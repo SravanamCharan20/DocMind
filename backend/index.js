@@ -6,6 +6,8 @@ import authRoutes from "./routes/auth.js";
 import { requireAuth } from "./middleware/auth.js";
 import documentRoutes from "./routes/documents.js";
 import chatRoutes from "./routes/chat.js";
+import spaceRoutes from "./routes/spaces.js";
+
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/spaces", spaceRoutes);
+
 
 app.get("/apis/protected-test", requireAuth, (req, res) => {
   res.json({

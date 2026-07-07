@@ -1,34 +1,29 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from app.ingestion import extract_text, chunk_text
 from app.retrieval import embed_and_store, hybrid_search, build_bm25_index
 from app.rerank import rerank_chunks
 from app.generate import generate_answer
 from langfuse import observe
 
-
 app = FastAPI(title="DocMind RAG Service")
-
-@app.on_event("startup")
-def startup_event():
-    build_bm25_index()
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
 @app.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = File(...), space_id: str = Form(...)):
     file_bytes = await file.read()
     text = extract_text(file_bytes, file.filename)
     chunks = chunk_text(text)
-    embed_and_store(chunks, source_doc=file.filename)
-    build_bm25_index()
+    embed_and_store(chunks, source_doc=file.filename, space_id=space_id)
+    build_bm25_index(space_id)
     return {"filename": file.filename, "num_characters": len(text), "num_chunks": len(chunks)}
 
 @app.get("/query")
 @observe()
-def query_documents(q: str):
-    hybrid_results = hybrid_search(q)
+def query_documents(q: str, space_id: str):
+    hybrid_results = hybrid_search(q, space_id)
     reranked_results = rerank_chunks(q, hybrid_results)
     try:
         answer = generate_answer(q, reranked_results)

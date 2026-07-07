@@ -10,7 +10,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!loading) {
-      router.push(token ? "/chat" : "/login");
+      router.push(token ? "/spaces" : "/login");
     }
   }, [loading, token, router]);
 

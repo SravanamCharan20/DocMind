@@ -30,22 +30,24 @@ export default function LoginPage() {
       }
 
       login(data.token);
-      router.push("/chat");
+      router.push("/spaces");
     } catch (err) {
       setError("Could not reach the server");
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "80px auto" }}>
-      <h1>Log In</h1>
-      <form onSubmit={handleSubmit}>
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="w-full max-w-sm border border-gray-200 rounded-lg p-6 bg-white">
+      <h1 className="text-lg font-semibold text-gray-900 mb-4">Log In</h1>
+      <form onSubmit={handleSubmit} className="space-y-3">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <input
           type="password"
@@ -53,11 +55,20 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-        <button type="submit">Log In</button>
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white rounded-md py-2 text-sm font-medium hover:bg-indigo-700"
+        >
+          Log In
+        </button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <p>No account? <a href="/register">Register</a></p>
+      {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
+      <p className="text-sm text-gray-500 mt-4">
+        No account? <a href="/register" className="text-indigo-600">Register</a>
+      </p>
     </div>
-  );
+  </div>
+);
 }

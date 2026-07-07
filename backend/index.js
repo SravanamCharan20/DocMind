@@ -22,7 +22,6 @@ app.use(
   }),
 );
 
-app.options("*", cors()); // Enable CORS
 app.use(express.json());
 
 app.get("/health", (req, res) => {

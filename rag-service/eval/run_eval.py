@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -14,6 +15,17 @@ from ragas.metrics import faithfulness, AnswerRelevancy
 
 load_dotenv()
 
+# Since every document/query is now scoped to a space_id (multi-tenancy), this
+# script needs to know which space's documents to evaluate against. Pass it as
+# a command-line argument — you can copy a real space_id out of the frontend
+# URL, e.g. https://doc-mind-pearl.vercel.app/spaces/<this-part-is-the-id>
+if len(sys.argv) < 2:
+    print("Usage: python -m eval.run_eval <space_id>")
+    print("(copy a space_id from the frontend URL: /spaces/<space_id>)")
+    sys.exit(1)
+
+SPACE_ID = sys.argv[1]
+
 evaluator_llm = LangchainLLMWrapper(
     ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
 )
@@ -23,7 +35,7 @@ evaluator_embeddings = LangchainEmbeddingsWrapper(
 
 
 
-build_bm25_index()  # this script runs standalone, outside FastAPI, so nothing has indexed BM25 yet
+build_bm25_index(SPACE_ID)  # this script runs standalone, outside FastAPI, so nothing has indexed BM25 yet
 
 with open("eval/test_questions.json") as f:
     questions = json.load(f)
@@ -31,7 +43,7 @@ with open("eval/test_questions.json") as f:
 data = {"question": [], "answer": [], "contexts": []}
 
 for q in questions:
-    hybrid_results = hybrid_search(q)
+    hybrid_results = hybrid_search(q, SPACE_ID)
     reranked_results = rerank_chunks(q, hybrid_results)
     answer = generate_answer(q, reranked_results)
 

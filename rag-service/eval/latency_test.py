@@ -1,8 +1,20 @@
 import json
+import sys
 import time
 import requests
 import statistics
 
+# Same reasoning as run_eval.py: /query is now space-scoped, so this needs a
+# real space_id (copy one from the frontend URL: /spaces/<space_id>).
+# Optionally pass a base URL as a second argument to hit a deployed instance
+# instead of localhost, e.g.:
+#   python -m eval.latency_test <space_id> https://your-space.hf.space
+if len(sys.argv) < 2:
+    print("Usage: python -m eval.latency_test <space_id> [base_url]")
+    sys.exit(1)
+
+SPACE_ID = sys.argv[1]
+BASE_URL = sys.argv[2] if len(sys.argv) > 2 else "http://127.0.0.1:8000"
 
 with open("eval/test_questions.json") as f:
     questions = json.load(f)
@@ -13,7 +25,9 @@ failures = 0
 for q in questions:
     start = time.time()
     try:
-        response = requests.get("http://127.0.0.1:8000/query", params={"q": q}, timeout=30)
+        response = requests.get(
+            f"{BASE_URL}/query", params={"q": q, "space_id": SPACE_ID}, timeout=30
+        )
         elapsed = time.time() - start
         if response.status_code == 200:
             latencies.append(elapsed)

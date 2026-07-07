@@ -8,13 +8,21 @@ import documentRoutes from "./routes/documents.js";
 import chatRoutes from "./routes/chat.js";
 import spaceRoutes from "./routes/spaces.js";
 
-
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-app.use(cors());          // Enable CORS
+app.use(
+  cors({
+    origin: "https://doc-mind-pearl.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+app.options("*", cors()); // Enable CORS
 app.use(express.json());
 
 app.get("/health", (req, res) => {
@@ -25,7 +33,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/spaces", spaceRoutes);
-
 
 app.get("/apis/protected-test", requireAuth, (req, res) => {
   res.json({

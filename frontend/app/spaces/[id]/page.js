@@ -92,20 +92,20 @@ export default function SpaceDetailPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto p-8">
+      <div className="max-w-3xl mx-auto p-4 sm:p-8">
         <h1 className="text-xl font-semibold text-gray-900 mb-1">{space?.name || "..."}</h1>
 
         <div className="border border-gray-200 rounded-lg p-4 bg-white mb-6">
-          <form onSubmit={handleUpload} className="flex gap-2 mb-3">
+          <form onSubmit={handleUpload} className="flex flex-wrap gap-2 mb-3">
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              className="text-sm flex-1"
+              className="text-sm flex-1 min-w-0"
             />
             <button
               type="submit"
               disabled={uploading || !file}
-              className="px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 shrink-0"
             >
               {uploading ? "Uploading..." : "Upload"}
             </button>
@@ -128,8 +128,8 @@ export default function SpaceDetailPage() {
         <div className="space-y-4 mb-4">
           {messages.map((m, i) => (
             <div key={i} className="border border-gray-200 rounded-lg p-4 bg-white">
-              <p className="text-sm font-medium text-gray-900 mb-1">{m.question}</p>
-              <p className="text-sm text-gray-600">{m.answer}</p>
+              <p className="text-sm font-medium text-gray-900 mb-1 break-words">{m.question}</p>
+              <p className="text-sm text-gray-600 break-words">{m.answer}</p>
               {m.sources.length > 0 && (
                 <details className="mt-2">
                   <summary className="text-xs text-indigo-600 cursor-pointer">
@@ -155,12 +155,12 @@ export default function SpaceDetailPage() {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask a question..."
             disabled={asking}
-            className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 min-w-0 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
             type="submit"
             disabled={asking}
-            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+            className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 shrink-0"
           >
             {asking ? "Thinking..." : "Ask"}
           </button>
